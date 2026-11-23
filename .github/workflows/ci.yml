@@ -1,0 +1,56 @@
+name: CI - Pull & Verify Image from GHCR
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Cấp quyền đọc Packages để GITHUB_TOKEN có thể pull image từ GHCR
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  pull-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Đăng nhập GHCR bằng secrets.GITHUB_TOKEN và user hệ thống mặc định
+      - name: Login to GitHub Container Registry (GHCR)
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      # 2. Chuyển đổi tên Owner / Repo từ chữ hoa sang chữ thường (tránh lỗi định dạng Docker)
+      - name: Normalize owner and repo names to lowercase
+        id: lower
+        run: |
+          OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO_LOWER=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          echo "owner=${OWNER_LOWER}" >> "$GITHUB_OUTPUT"
+          echo "repo=${REPO_LOWER}" >> "$GITHUB_OUTPUT"
+          echo "Normalized: owner=${OWNER_LOWER}, repo=${REPO_LOWER}"
+
+      # 3. Kéo image từ GHCR và khởi chạy container verify ở chế độ nền (-d)
+      - name: Pull image and verify container in detached mode
+        run: |
+          IMAGE="ghcr.io/${{ steps.lower.outputs.owner }}/payment-service:1.0.0"
+          echo "Pulling image: $IMAGE"
+          docker pull "$IMAGE"
+
+          echo "Running container in detached mode (-d)..."
+          docker run -d --name payment-verify -p 8080:8080 "$IMAGE"
+
+          echo "Waiting for /health endpoint..."
+          for i in $(seq 1 15); do
+            if curl -sf http://localhost:8080/health; then
+              echo ""
+              echo "Verification PASSED: payment-service container is healthy!"
+              break
+            fi
+            sleep 1
+          done
+
+          docker ps --filter "name=payment-verify"
+          docker logs --tail 20 payment-verify
+          docker rm -f payment-verify

@@ -40,7 +40,16 @@ docker push ghcr.io/hgthuan/payment-service:1.0.0
 
 ---
 
-## 3. Liên kết Package trên GitHub
+## 3. Liên kết Package trên GitHub & Kết quả Push thực tế
 
 - **Trang GitHub Packages cá nhân:** https://github.com/HgThuan?tab=packages
+- **Package Repository:** https://github.com/HgThuan/JBE_Devopp_SS8/pkgs/container/payment-service
 - **Image Reference:** `ghcr.io/hgthuan/payment-service:1.0.0`
+- **Kết quả Push thực tế ([Actions Run #45094410900](https://github.com/HgThuan/JBE_Devopp_SS8/actions/runs/45094410900)):**
+  ```text
+  Login Succeeded
+  1.0.0: digest: sha256:ae3f9ced0caf01f40d6f2d4e475d658331d2441f20d4259b1aa52f63a4fc8dd2 size: 856
+  IMAGE                                   ID             DISK USAGE   CONTENT SIZE
+  ghcr.io/hgthuan/payment-service:1.0.0   ae3f9ced0caf        303MB         88.7MB
+  ```
+

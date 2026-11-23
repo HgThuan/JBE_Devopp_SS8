@@ -34,4 +34,17 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 ## 3. So sánh hiệu quả dung lượng thực tế (`docker images`)
 
-*(Đang cập nhật kết quả đo thực tế từ GitHub Actions Linux runner...)*
+Kết quả đo thực tế khi build `cart-service` trên Ubuntu x86_64 runner ([Actions Run #45094410900](https://github.com/HgThuan/JBE_Devopp_SS8/actions/runs/45094410900)):
+
+```text
+REPOSITORY                                   TAG            SIZE
+cart-service                                 multistage     303MB
+cart-service                                 single-stage   962MB
+```
+*(Trong đó image `multistage` có kích thước giải nén trên đĩa là `303MB`, và kích thước nội dung nén `CONTENT SIZE` chỉ **`88.7MB`** khi lưu trữ/kéo qua registry).*
+
+| Phương pháp | Base Image | Dung lượng Image (`docker images`) | Ghi chú |
+| :--- | :--- | :---: | :--- |
+| **Single-stage Build** | `eclipse-temurin:17-jdk-alpine` | **962 MB** | Chứa toàn bộ JDK, Gradle cache, mã nguồn thô (`src/`). |
+| **Multi-stage Build** | `eclipse-temurin:17-jre-alpine` | **303 MB** (nén **88.7 MB**) | Chỉ chứa JRE + file `app.jar` đã build (**giảm ~68.5% dung lượng**). |
+

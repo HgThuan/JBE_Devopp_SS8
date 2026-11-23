@@ -60,6 +60,19 @@ volumes:
 
 ---
 
-## 4. Kiểm chứng thực tế
+## 4. Kiểm chứng thực tế (Observed Output trên GitHub Actions Runner)
 
-Sau khi áp dụng cấu hình trên và khởi động lại Runner (`docker compose up -d --force-recreate`), kiểm tra lệnh `docker info` và `docker build` bên trong container đã kết nối thành công tới Docker Daemon của máy Host.
+- **Workflow Run kiểm chứng:** https://github.com/HgThuan/JBE_Devopp_SS8/actions/runs/45094410900
+- **Kết quả thực tế:**
+  1. **Khi KHÔNG mount `/var/run/docker.sock`:**
+     ```text
+     Server:
+     ERROR: error during connect: Get "http://docker:2375/v1.45/info": dial tcp: lookup docker on 168.63.129.16:53: no such host
+     ```
+     *(Hoặc `Cannot connect to the Docker daemon at unix:///var/run/docker.sock` khi `DOCKER_HOST` mặc định dùng unix socket).*
+  2. **Khi ĐÃ mount `-v /var/run/docker.sock:/var/run/docker.sock` (DooD):**
+     ```text
+     ServerVersion=29.4.2, OS=Ubuntu 26.04.1 LTS, Arch=x86_64
+     ```
+     Container kết nối thẳng tới Docker Daemon trên máy Host và thực thi `docker info` / `docker build` thành công.
+
