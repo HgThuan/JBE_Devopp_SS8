@@ -25,4 +25,21 @@ Xem file workflow chuẩn ở thư mục gốc repository: [`/.github/workflows/
      ```
 
 3. **Kéo Image & Verify ở chế độ nền (`-d`):**
-   - Workflow chỉ kéo image đã đóng gói sẵn từ GHCR (`docker pull`) và chạy `docker run -d` để kiểm chứng healthcheck, không biên dịch lại mã nguồn Java nên tổng thời gian thực thi rất nhanh (**dưới 20 giây**).
+   - Workflow chỉ kéo image đã đóng gói sẵn từ GHCR (`docker pull`) và chạy `docker run -d` để kiểm chứng healthcheck, không biên dịch lại mã nguồn Java nên tổng thời gian thực thi rất nhanh (**chỉ 11 giây**, dưới 20 giây theo yêu cầu).
+
+---
+
+## 3. Kết quả chạy Workflow thực tế trên GitHub Actions
+
+- **Link màn hình kết quả Workflow thành công (màu xanh):** https://github.com/HgThuan/JBE_Devopp_SS8/actions/runs/45094686253
+- **Thời gian thực thi:** `11 giây` (`2026-11-23T01:27:33Z` $\rightarrow$ `2026-11-23T01:27:44Z`)
+- **Log thực tế đã kiểm chứng:**
+  ```text
+  Status: Downloaded newer image for ghcr.io/hgthuan/payment-service:1.0.0
+  Running container in detached mode (-d)...
+  Waiting for /health endpoint...
+  {"version":"1.0.0","service":"payment-service","status":"UP"}
+  Verification PASSED: payment-service container is healthy!
+  Started PaymentServiceApplication in 1.449 seconds
+  ```
+
