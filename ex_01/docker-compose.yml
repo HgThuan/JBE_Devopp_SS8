@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  github-runner:
+    image: myoung34/github-runner:latest
+    container_name: quickbite-github-runner
+    restart: unless-stopped
+    environment:
+      REPO_URL: https://github.com/HgThuan/JBE_Devopp_SS8
+      RUNNER_NAME: quickbite-linux-runner
+      RUNNER_WORKDIR: /tmp/runner/work
+      RUNNER_SCOPE: repo
+      ACCESS_TOKEN: ${GITHUB_RUNNER_PAT}
+      LABELS: self-hosted,linux,x64,quickbite
+    volumes:
+      # SỬA LỖI DooD (Docker-outside-of-Docker):
+      # Bind mount file Docker socket từ máy Host vào trong container Runner
+      # Giúp lệnh `docker` trong Runner giao tiếp trực tiếp với Docker Daemon của máy Host
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner_work:/tmp/runner/work
+    # Bổ sung group_add với GID của nhóm docker trên máy Host (lấy bằng `stat -c '%g' /var/run/docker.sock`)
+    # nếu container Runner chạy dưới user non-root (ví dụ user 'runner')
+    group_add:
+      - "${DOCKER_GID:-999}"
+
+volumes:
+  runner_work:

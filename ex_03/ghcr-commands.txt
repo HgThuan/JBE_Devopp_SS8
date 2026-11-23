@@ -1,0 +1,21 @@
+# ==============================================================================
+# CÁC CÂU LỆNH CLI BUILD & PUSH IMAGE LÊN GITHUB CONTAINER REGISTRY (GHCR)
+# ==============================================================================
+
+# 1. Lưu Personal Access Token (PAT có quyền write:packages) vào biến môi trường
+export CR_PAT="<YOUR_GITHUB_PAT>"
+
+# 2. Xác thực Docker CLI với ghcr.io bằng --password-stdin (an toàn, không lộ token vào history)
+echo "$CR_PAT" | docker login ghcr.io -u HgThuan --password-stdin
+
+# 3. Build Docker Image và gắn tag đúng namespace viết thường (hgthuan) + phiên bản 1.0.0
+docker build -t ghcr.io/hgthuan/payment-service:1.0.0 ./ex_03/payment-service
+
+# (Hoặc gắn tag từ image cục bộ có sẵn)
+# docker tag payment-service:1.0.0 ghcr.io/hgthuan/payment-service:1.0.0
+
+# 4. Đẩy Image lên GitHub Container Registry
+docker push ghcr.io/hgthuan/payment-service:1.0.0
+
+# 5. Kiểm tra lại URL Package trên GitHub:
+# https://github.com/HgThuan?tab=packages
